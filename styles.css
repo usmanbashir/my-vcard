@@ -1,0 +1,330 @@
+/* styles.css — My Business Cards PWA */
+
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('fonts/space-grotesk-var-latin.woff2') format('woff2');
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('fonts/ibm-plex-mono-400-latin.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('fonts/ibm-plex-mono-500-latin.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #050507;
+  overscroll-behavior: none;
+  height: 100%;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  color: #fff;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+a { -webkit-tap-highlight-color: transparent; }
+button { font: inherit; -webkit-tap-highlight-color: transparent; }
+
+#app {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #050507;
+}
+
+#stage {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+  will-change: transform, opacity;
+}
+
+#gl {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#overlay { position: absolute; inset: 0; pointer-events: none; }
+
+/* ── card overlay ── */
+.vcard {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  padding: calc(env(safe-area-inset-top, 0px) + 72px) 24px calc(env(safe-area-inset-bottom, 0px) + 32px);
+}
+
+.vcard .scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(0,0,0,0.34) 0%, rgba(0,0,0,0) 20%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.42) 100%);
+}
+
+.vcard .hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: 18px;
+}
+
+.vcard .hero h1 {
+  margin: 0;
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: #fff;
+  text-shadow: 0 2px 26px rgba(0,0,0,0.45);
+}
+
+.vcard .hero .role {
+  margin-top: 8px;
+  font-weight: 500;
+  font-size: 16px;
+  color: rgba(255,255,255,0.88);
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 14px rgba(0,0,0,0.4);
+}
+
+.vcard .glass {
+  pointer-events: auto;
+  position: relative;
+  border-radius: 26px;
+  overflow: hidden;
+  margin: 0 -8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), 0 18px 40px rgba(0,0,0,0.35);
+}
+
+.vcard.center .glass { margin: 0 -16px; padding: 16px 18px; }
+
+.vcard .grow {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.vcard.center .grow { justify-content: center; }
+
+.vcard .qrbox {
+  position: relative;
+  border-radius: 16px;
+  padding: 7px;
+  background: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  cursor: pointer;
+}
+
+.vcard .qrbox .expand {
+  position: absolute;
+  right: -7px;
+  bottom: -7px;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0c0e14;
+  border: 1.5px solid rgba(255,255,255,0.9);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+}
+
+.vcard .contacts { flex: 1; min-width: 0; }
+.vcard.center .contacts { flex: 0 1 auto; }
+
+.crow {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-decoration: none;
+  padding: 8px 0;
+  color: rgba(255,255,255,0.92);
+  min-width: 0;
+}
+
+.crow .cicon {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.14);
+}
+
+.crow .cval {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+/* ── first-run hint ── */
+#hint {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 14px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  padding: 6px 13px;
+  border-radius: 999px;
+  background: rgba(10,11,16,0.55);
+  border: 1px solid rgba(255,255,255,0.14);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.7);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 600ms;
+}
+
+#hint.visible { opacity: 1; }
+
+/* ── scan mode ── */
+@keyframes qrScanIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes qrPanelIn { from { opacity: 0; transform: scale(0.86); } to { opacity: 1; transform: scale(1); } }
+
+.scan {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 26px;
+  padding: 28px;
+  cursor: pointer;
+  background: rgba(7,8,12,0.92);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  animation: qrScanIn 260ms cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+.scan .scan-close {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 18px);
+  right: 18px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.scan .scan-id { text-align: center; }
+
+.scan .scan-org {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 7px;
+}
+
+.scan .scan-name {
+  font-weight: 700;
+  font-size: 24px;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.scan .scan-qr {
+  border-radius: 22px;
+  padding: 16px;
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+  animation: qrPanelIn 320ms cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+.scan .scan-foot { text-align: center; }
+
+.scan .scan-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.16);
+  font-size: 13px;
+  color: rgba(255,255,255,0.9);
+  font-weight: 500;
+}
+
+.scan .scan-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #5fffd0;
+  box-shadow: 0 0 8px #5fffd0;
+}
+
+.scan .scan-url {
+  margin-top: 12px;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: -0.01em;
+}
+
+.scan .scan-hint {
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.05em;
+}
